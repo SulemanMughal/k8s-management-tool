@@ -1,0 +1,61 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head >
+    
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <title>{% block title %}Hemisphere Cloud{% endblock %}</title>
+
+    {% block meta_tags %}
+    {% endblock %}
+
+
+    {% include 'master_app/style.html' %}
+
+    {% block styles %}
+    {% endblock %}
+
+  
+</head>
+
+<body class="toggle-sidebar">
+
+
+    {% block header %}
+        {% include 'master_app/header.html' %}
+    {% endblock %}
+
+
+    {% block sidebar %}
+        {% include 'master_app/sidebar.html' %}
+    {% endblock %}
+
+
+    {% block content %}
+    {% endblock %}
+
+ 
+  
+
+  {% block footer %}
+    
+  {% endblock %}
+
+  
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  
+  {% include 'master_app/script.html' %}
+
+  {% block scripts %}
+  {% endblock %}
+ 
+</body>
+
+</html>

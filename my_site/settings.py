@@ -20,6 +20,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+
+    # local apps
+    'master_app'
 ]
 
 MIDDLEWARE = [
@@ -37,7 +41,9 @@ ROOT_URLCONF = 'my_site.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'master_app/templates/master_app',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -97,4 +103,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
+STATIC_ROOT= BASE_DIR / 'static'
+STATICFILES_DIRS=[
+    
+]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT= BASE_DIR.parent / 'media'

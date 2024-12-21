@@ -44,6 +44,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'master_app/templates/master_app',
+            BASE_DIR / 'authentication/templates',
             BASE_DIR / 'authentication/templates/authentication',
         ],
         'APP_DIRS': True,

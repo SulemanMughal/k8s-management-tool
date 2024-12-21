@@ -23,7 +23,8 @@ INSTALLED_APPS = [
     
 
     # local apps
-    'master_app'
+    'master_app',
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -114,3 +115,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT= BASE_DIR.parent / 'media'
+
+
+
+# Authentication Login Functionality
+from django.urls import reverse_lazy
+
+LOGIN_REDIRECT_URL = reverse_lazy('index')
+
+LOGIN_URL = reverse_lazy("auth-login")
+
+LOGOUT_URL = reverse_lazy("auth-logout")

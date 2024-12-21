@@ -47,7 +47,7 @@
 
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#!">
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'auth-logout' %}">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sign Out</span>
               </a>
@@ -64,7 +64,7 @@
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
         <li class="mx-3  btn btn-primary">
-          <a class="dropdown-item d-flex align-items-center" href="#!">
+          <a class="dropdown-item d-flex align-items-center" href="{% url 'auth-login' %}">
             <span >Sign In</span>
             <!-- <i class="bi bi-box-arrow-right ps-2"></i> -->
           </a>

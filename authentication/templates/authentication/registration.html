@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Registration{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <div class="card mx-auto my-5 w-100  w-md-50 border-0 " >
+                    <div class="card-header  bg-transparent border-0">
+                        <div class="row justify-content-center text-center">
+                            <div class="col">
+                                <h2 class="card-title fw-bolder  display-6">Registration</h2>  
+                            </div>
+                        </div>
+                      </div>
+                    <div class="card-body">
+                        <form class="row g-3 needs-validation" novalidate action="{% url 'auth-register' %}" method="POST" id="register_form">
+                            {% include 'form_errors.html' %}
+                            {% csrf_token %}
+                            <div class="">
+                              <input type="text" class="form-control bg-transparent" id="id_username" aria-describedby="emailHelp" required="" name="username" autocomplete="off" autofocus="on" maxlength="30" tabindex="1" placeholder="Username *"  {% if form.username.value %} value="{{ form.username.value  }}" {% endif %}>
+                              <div class="invalid-feedback">
+                                Please enter a valid username
+                              </div>
+                              <div id="emailHelp" class="form-text">Username should be atleast 5</div>
+                              
+                            </div>
+                            <div class="">
+                              <input type="text" class="form-control bg-transparent" id="id_first_name" aria-describedby="emailHelp" required="" name="first_name" autocomplete="off" maxlength="30" tabindex="2" placeholder="First name *" {% if form.first_name.value %} value="{{ form.first_name.value  }}" {% endif %}>
+                              <div class="invalid-feedback">
+                                Please enter a valid first name
+                              </div>
+                            </div>
+
+
+                            <div class="">
+                              <input type="text" class="form-control bg-transparent" id="id_last_name" aria-describedby="emailHelp" required="" name="last_name" autocomplete="off" maxlength="30" tabindex="3" placeholder="Last name *" {% if form.last_name.value %} value="{{ form.last_name.value  }}" {% endif %}>
+                              <div class="invalid-feedback">
+                                Please enter a valid last name
+                              </div>
+                            </div>
+                            <div class="">
+                              <input type="email" class="form-control bg-transparent" id="id_email" aria-describedby="emailHelp" required="" name="email" autocomplete="off" maxlength="50" tabindex="4" placeholder="Email *"  {% if form.email.value %} value="{{ form.email.value  }}" {% endif %}>
+                              <div class="invalid-feedback" >
+                                Please enter a valid email address
+                              </div>
+                            </div>
+                            
+                            <div class="">
+                              <input type="password" class="form-control bg-transparent" id="id_new_password1" required="" name="password" placeholder="Password *"  tabindex="5" {% if form.password.value %} value="{{ form.password.value  }}" {% endif %}>
+                              <div class="invalid-feedback"  >
+                                Please enter a password
+                              </div>
+                              {% include 'password_conditions.html' %}
+                            </div>
+                            <div class="">
+                                <input type="password" class="form-control bg-transparent" id="id_new_password2" required="" name="password2" tabindex="6" placeholder="Confirm password *"  {% if form.password2.value %} value="{{ form.password2.value  }}" {% endif %}>
+                                <div class="invalid-feedback">
+                                  Please enter confirm password
+                                </div>
+                              </div>
+                            <div class="mt-4">
+                                <div class="row justify-content-center text-center">
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-primary  w-50  has-spinner" id="register_submit_btn" tabindex="10">Register</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="">
+                              <div class="row justify-content-center text-center">
+                                  <div class="col">
+                                    <p class="card-text">Already have an account <a href="{%  url  'auth-login' %}" target="_self" class="card-link  text-decoration-none" tabindex="11">Login</a>
+                                    </p>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="">
+                              <div class="row justify-content-center text-center">
+                                  <div class="col">
+                                    <a href="#!" target="_self" class="card-link  text-decoration-none" tabindex="12">Forgot Pasword ? </a>
+                                  </div>
+                              </div>
+                            </div>
+                          </form>
+
+                          
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})();
+</script>
+
+{% endblock %}

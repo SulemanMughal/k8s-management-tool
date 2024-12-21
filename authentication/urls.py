@@ -1,9 +1,16 @@
 from django.urls import path
 
-from . import views
+from .views import (
+    AuthLoginView,
+    AuthLogoutView,
+    AuthRegisterationView,
+    AuthUserActivationView
+)
 
 urlpatterns = [
-    path('login', views.AuthLoginView, name="auth-login"),
-    path('logout', views.AuthLogoutView, name="auth-logout"),
+    path('login', AuthLoginView, name="auth-login"),
+    path('logout', AuthLogoutView, name="auth-logout"),
+    path('registeration', AuthRegisterationView, name="auth-register"),
+    path('activate/<slug:uidb64>/<slug:token>/', AuthUserActivationView, name='auth-activate'),
 
 ]

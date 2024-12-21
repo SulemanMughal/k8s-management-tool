@@ -5,7 +5,8 @@
 
 from .forms import (
 
-    loginForm
+    loginForm,
+    registerForm
 
 )
 
@@ -18,6 +19,23 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.shortcuts import render, redirect
 
 
+from django.contrib.sites.shortcuts import get_current_site
+
+from django.template.loader import render_to_string
+
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+
+from django.utils.encoding import force_bytes,force_str
+
+from .tokens import account_activation_token
+
+from django.core.mail import (send_mail, EmailMessage)
+
+
+from django.contrib.auth import (
+    get_user_model
+)
+User = get_user_model()
 
 
 def AuthLoginView(request):
@@ -105,3 +123,62 @@ def AuthLoginView(request):
 def AuthLogoutView(request):
     logout(request)
     return redirect('index')
+
+
+
+def AuthRegisterationView(request):
+    template_name = "authentication/registration.html"
+    if request.user.is_authenticated:
+        return redirect("index")
+    else:
+        if request.method != 'POST':
+            form = registerForm()
+        else:
+            form = registerForm(request.POST)
+            if form.is_valid():
+                user = form.save(commit=False)
+                user.active = False
+                user.set_password(form.cleaned_data['password2'])
+                user.email = form.cleaned_data['email']
+                user.save()
+                current_site = get_current_site(request)
+                message = render_to_string('authentication/acc_active_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                })
+                mail_subject = 'Activate your account.'
+                to_email = form.cleaned_data.get('email')
+                email = EmailMessage(mail_subject, message, to=[to_email])
+                email.send()
+                return render(request, 'authentication/acc_active_email_confirm.html')
+        context = {
+            'form': form
+        }
+        return render(request, template_name, context)
+    
+
+
+
+def AuthUserActivationView(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.active = True
+        user.save()
+        login(request, user)
+        try:
+            next = request.GET.get("next", None)
+            if next is not None:
+                return redirect(next)
+            else:
+                return redirect('index')
+        except:
+            return redirect('index')
+    else:
+        messages.warning(request, "Invalid Activation Link")
+        return redirect("auth-login")

@@ -31,16 +31,17 @@
                         <form class="row g-3 needs-validation" novalidate  action="{% url 'auth-login' %}" method="POST" id="login_form"> 
 
                           {% include 'form_errors.html' %}
+                          {% include 'messages.html' %}
 
                             {% csrf_token %}
 
                             <div class="">
 
-                              <input type="text" class="form-control bg-transparent" id="exampleInputEmail1" aria-describedby="emailHelp" required="" name="username" autocomplete="off" placeholder="Username" tabindex="1" autofocus="on">
+                              <input type="email" class="form-control bg-transparent" id="exampleInputEmail1" aria-describedby="emailHelp" required="" name="username" autocomplete="off" placeholder="Email" tabindex="1" autofocus="on">
 
                               <div class="invalid-feedback">
 
-                                Please enter a valid username
+                                Please enter a valid email
 
                               </div>
 

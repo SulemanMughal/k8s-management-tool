@@ -12,11 +12,12 @@ from .forms import (
 
 from django.contrib import messages
 
-# from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 
 from django.shortcuts import render, redirect
+from django.urls import reverse
 
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -30,6 +31,8 @@ from django.utils.encoding import force_bytes,force_str
 from .tokens import account_activation_token
 
 from django.core.mail import (send_mail, EmailMessage)
+
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 
 
 from django.contrib.auth import (
@@ -92,7 +95,7 @@ def AuthLoginView(request):
 
                         messages.error(
 
-                            request, "Username or password has been entered incorrectly.")
+                            request, "Email or password has been entered incorrectly.")
 
                 except Exception as e:
 
@@ -182,3 +185,22 @@ def AuthUserActivationView(request, uidb64, token):
     else:
         messages.warning(request, "Invalid Activation Link")
         return redirect("auth-login")
+    
+
+@login_required()
+def AuthChangePassword(request):
+    template_name = "change_password.html"
+    if request.method != 'POST':
+        form = PasswordChangeForm(user=request.user)
+    else:
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            messages.success(
+                request, "Password has been updated successfully.")
+            return redirect(reverse('index'))
+    context = {
+        'form': form
+    }
+    return render(request, template_name, context)

@@ -4,7 +4,8 @@ from .views import (
     AuthLoginView,
     AuthLogoutView,
     AuthRegisterationView,
-    AuthUserActivationView
+    AuthUserActivationView,
+    AuthChangePassword
 )
 
 from django.contrib.auth.views import (
@@ -24,4 +25,7 @@ urlpatterns = [
          name='password_reset_confirm'),
     path('reset/done/', PasswordResetCompleteView.as_view(),
          name='password_reset_complete'),
+
+    path('change_password', AuthChangePassword, name="auth-change-password"),
+
 ]

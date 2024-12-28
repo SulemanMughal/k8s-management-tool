@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     # local apps
     'master_app',
     'authentication',
+    'pod_management'
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+
+
+# Kubernetes Configurations Path
+KUBE_CONFIG_PATH=config("KUBE_CONFIG_PATH")

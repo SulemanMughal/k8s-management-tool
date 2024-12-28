@@ -96,3 +96,6 @@ Db
 
 *.sqlite3
 
+
+
+kubeconfig.yaml

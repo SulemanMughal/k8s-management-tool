@@ -9,7 +9,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("master_app.urls")),
-    path("", include("authentication.urls"))
+    path("", include("authentication.urls")),
+    path("pods", include("pod_management.urls")),
 ]
 
 

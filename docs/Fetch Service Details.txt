@@ -1,0 +1,3 @@
+To replicate the behavior of kubectl get -n <namespace> service nginx-ingress -o wide in Django, you can fetch details of the nginx-ingress service in a specific namespace and return all the relevant information.
+
+

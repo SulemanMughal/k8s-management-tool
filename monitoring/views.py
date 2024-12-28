@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from .k8s_utils import get_node_metrics, get_pod_metrics, create_pod_with_startup_probe
+from .k8s_utils import get_node_metrics, get_pod_metrics
 
 
 

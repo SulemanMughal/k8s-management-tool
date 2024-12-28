@@ -1,0 +1,40 @@
+4. Example Usage
+GET Request
+Access the endpoint with the node name as a query parameter:
+
+GET /get-node-pod-cidr/?node_name=<nodeName>
+Example Request
+GET /get-node-pod-cidr/?node_name=node1
+
+
+5. Example Response
+Success
+{
+
+    "podCIDR": "10.244.0.0/24"
+
+}
+Error
+{
+
+    "error": "Node not found"
+
+}
+
+
+6. Key Features
+Node-Specific PodCIDR:
+
+Fetches the podCIDR associated with a specific node.
+
+Error Handling:
+
+Provides meaningful error messages for invalid or non-existent nodes.
+
+RESTful API:
+
+Simple API endpoint to retrieve the required information.
+
+
+
+This implementation retrieves the podCIDR of a specific Kubernetes node through Django, replicating the kubectl get no <nodeName> -o json | jq '.spec.podCIDR' functionality. Let me know if you need further assistance!

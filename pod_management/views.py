@@ -1,7 +1,7 @@
 
 from django.http import JsonResponse
 
-from .k8s_utils import create_pod, get_pod, update_pod, delete_pod, list_pods,port_forward_pod, get_pod_logs, create_pod_with_resources, create_pod_with_startup_probe, create_pod_with_liveness_probe, create_pod_with_readiness_probe
+from .k8s_utils import create_pod, get_pod, update_pod, delete_pod, list_pods,port_forward_pod, get_pod_logs, create_pod_with_resources, create_pod_with_startup_probe, create_pod_with_liveness_probe, create_pod_with_readiness_probe, create_pod_with_security_context, set_namespace_psa_labels, create_pod_psa_compliant, get_kube_proxy_pods
 
 
 def create_pod_view(request):
@@ -325,3 +325,99 @@ def create_pod_with_readiness_probe_view(request):
             return JsonResponse({"message": "Pod created successfully with readinessProbe", "response": response["response"]})
         except ValueError as e:
             return JsonResponse({"error": str(e)}, status=400)
+
+
+
+def create_pod_with_security_context_view(request):
+    if request.method == "POST":
+        namespace = request.POST.get("namespace", "default")
+        pod_name = request.POST.get("pod_name")
+        container_name = request.POST.get("container_name")
+        image = request.POST.get("image")
+        security_context = request.POST.get("security_context", None)
+        ports = request.POST.get("ports", "")
+
+        if not pod_name or not container_name or not image:
+            return JsonResponse({"error": "Pod name, container name, and image are required"}, status=400)
+
+        # Parse ports and security_context
+        try:
+            ports = [int(port.strip()) for port in ports.split(",") if port.strip()]
+            security_context = eval(security_context) if security_context else None
+        except:
+            return JsonResponse({"error": "Invalid ports or security_context format"}, status=400)
+
+        response = create_pod_with_security_context(
+            namespace=namespace,
+            pod_name=pod_name,
+            container_name=container_name,
+            image=image,
+            security_context=security_context,
+            ports=ports,
+        )
+        if response["status"] == "error":
+            return JsonResponse({"error": response["error"]}, status=400)
+        return JsonResponse({"message": "Pod created successfully with SecurityContext", "response": response["response"]})
+
+
+
+def set_namespace_psa_labels_view(request):
+    if request.method == "POST":
+        namespace = request.POST.get("namespace", "default")
+        psa_level = request.POST.get("psa_level", "baseline")  # Default to baseline
+
+        if not namespace or not psa_level:
+            return JsonResponse({"error": "Namespace and PSA level are required"}, status=400)
+
+        response = set_namespace_psa_labels(namespace, psa_level)
+        if response["status"] == "error":
+            return JsonResponse({"error": response["error"]}, status=400)
+        return JsonResponse({"message": f"PSA labels applied to namespace {namespace}", "response": response["response"]})
+
+
+
+
+def create_pod_psa_compliant_view(request):
+    if request.method == "POST":
+        namespace = request.POST.get("namespace", "default")
+        pod_name = request.POST.get("pod_name")
+        container_name = request.POST.get("container_name")
+        image = request.POST.get("image")
+        security_context = request.POST.get("security_context", "{}")
+        psa_level = request.POST.get("psa_level", "baseline")
+        ports = request.POST.get("ports", "")
+
+        if not pod_name or not container_name or not image or not psa_level:
+            return JsonResponse({"error": "Pod name, container name, image, and PSA level are required"}, status=400)
+
+        # Parse ports and security_context
+        try:
+            ports = [int(port.strip()) for port in ports.split(",") if port.strip()]
+            security_context = eval(security_context)
+        except:
+            return JsonResponse({"error": "Invalid ports or security_context format"}, status=400)
+
+        response = create_pod_psa_compliant(
+            namespace=namespace,
+            pod_name=pod_name,
+            container_name=container_name,
+            image=image,
+            security_context=security_context,
+            psa_level=psa_level,
+            ports=ports,
+        )
+        if response["status"] == "error":
+            return JsonResponse({"error": response["error"]}, status=400)
+        return JsonResponse({"message": f"Pod {pod_name} created in namespace {namespace}", "response": response["response"]})
+
+
+
+
+def get_kube_proxy_pods_view(request):
+    if request.method == "GET":
+        namespace = request.GET.get("namespace", "kube-system")  # Default to kube-system
+
+        response = get_kube_proxy_pods(namespace)
+        if response["status"] == "error":
+            return JsonResponse({"error": response["error"]}, status=400)
+        return JsonResponse({"pods": response["pods"]})

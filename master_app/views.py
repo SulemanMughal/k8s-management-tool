@@ -3,6 +3,8 @@ from my_site.utils import load_custom_kubeconfig
 from kubernetes import client
 from django.http import JsonResponse
 
+from .k8s_utils import get_node_pod_cidr
+
 # Create your views here.
 def index(request):
     template_name = "master_app/index.html"
@@ -93,6 +95,26 @@ def drain_node(request, node_name):
                 core_api.delete_namespaced_pod(name=pod.metadata.name, namespace=pod.metadata.namespace)
         return JsonResponse({"message": f"Node {node_name} drained successfully."})
     except client.exceptions.ApiException as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse({"error": e}, status=500)
 
 
+
+
+
+def get_node_pod_cidr_view(request):
+
+    if request.method == "GET":
+
+        node_name = request.GET.get("node_name")
+
+        if not node_name:
+
+            return JsonResponse({"error": "Node name is required"}, status=400)
+
+        response = get_node_pod_cidr(node_name)
+
+        if response["status"] == "error":
+
+            return JsonResponse({"error": response["error"]}, status=400)
+
+        return JsonResponse({"podCIDR": response["podCIDR"]})

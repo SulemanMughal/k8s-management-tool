@@ -1,0 +1,73 @@
+4. Example Usage
+POST Request: Set Namespace PSA Labels
+Endpoint: set-namespace-psa-labels/
+Payload:
+ {
+    "namespace": "example-namespace",
+    "psa_level": "restricted"
+}
+
+
+POST Request: Create PSA Compliant Pod
+Endpoint: create-pod-psa-compliant/
+Payload:
+ {
+    "namespace": "example-namespace",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "security_context": {
+        "runAsUser": 1000,
+        "runAsNonRoot": true,
+        "allowPrivilegeEscalation": false
+    },
+    "psa_level": "restricted",
+    "ports": "80,443"
+}
+
+
+
+5. Example Response
+Set Namespace PSA Labels Response
+{
+    "message": "PSA labels applied to namespace example-namespace",
+    "response": {
+        "metadata": {
+            "name": "example-namespace",
+            "labels": {
+                "pod-security.kubernetes.io/enforce": "restricted",
+                "pod-security.kubernetes.io/audit": "restricted",
+                "pod-security.kubernetes.io/warn": "restricted"
+            }
+        }
+    }
+}
+
+Create PSA Compliant Pod Response
+{
+    "message": "Pod example-pod created in namespace example-namespace",
+    "response": {
+        "metadata": {
+            "name": "example-pod",
+            "namespace": "example-namespace",
+            ...
+        }
+    }
+}
+
+
+6. Use Cases
+Namespace Security Enforcement:
+
+
+Automatically apply Pod Security Admission levels to namespaces.
+Pod Creation Compliance:
+
+
+Ensure Pods are compliant with specified security levels during creation.
+Security Management:
+
+
+Centrally manage security levels for applications deployed across the cluster.
+
+This implementation ensures compliance with Kubernetes Pod Security Admission policies through Django. Let me know if you need further assistance!

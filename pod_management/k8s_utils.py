@@ -501,3 +501,162 @@ def create_pod_with_readiness_probe(
         return {"status": "success", "response": response.to_dict()}
     except client.exceptions.ApiException as e:
         return {"status": "error", "error": str(e)}
+
+
+
+
+def create_pod_with_security_context(
+    namespace,
+    pod_name,
+    container_name,
+    image,
+    security_context=None,
+    ports=None,
+):
+    """
+    Create a Pod with specified SecurityContext settings.
+    :param namespace: The namespace of the Pod.
+    :param pod_name: The name of the Pod.
+    :param container_name: The name of the container.
+    :param image: The container image.
+    :param security_context: Dictionary containing SecurityContext specifications.
+    :param ports: List of container ports (optional).
+    :return: Status of Pod creation.
+    """
+    core_api, _ = load_custom_kubeconfig()
+    v1 = client.CoreV1Api()
+
+    # Define container with SecurityContext
+    container = client.V1Container(
+        name=container_name,
+        image=image,
+        ports=[client.V1ContainerPort(container_port=p) for p in (ports or [])],
+        security_context=client.V1SecurityContext(**security_context) if security_context else None,
+    )
+
+    # Define Pod spec
+    pod_spec = client.V1PodSpec(containers=[container])
+
+    # Define Pod
+    pod = client.V1Pod(
+        metadata=client.V1ObjectMeta(name=pod_name),
+        spec=pod_spec,
+    )
+
+    try:
+        response = v1.create_namespaced_pod(namespace=namespace, body=pod)
+        return {"status": "success", "response": response.to_dict()}
+    except client.exceptions.ApiException as e:
+        return {"status": "error", "error": str(e)}
+
+
+
+def set_namespace_psa_labels(namespace, psa_level):
+    """
+    Set Pod Security Admission labels on a namespace.
+    :param namespace: The namespace to label.
+    :param psa_level: The PSA level to apply (e.g., privileged, baseline, restricted).
+    :return: Response status.
+    """
+    core_api, _ = load_custom_kubeconfig()
+    v1 = client.CoreV1Api()
+
+    # Define the PSA labels
+    labels = {
+        "pod-security.kubernetes.io/enforce": psa_level,
+        "pod-security.kubernetes.io/audit": psa_level,
+        "pod-security.kubernetes.io/warn": psa_level,
+    }
+
+    try:
+        # Fetch existing namespace
+        namespace_obj = v1.read_namespace(name=namespace)
+
+        # Update labels
+        if namespace_obj.metadata.labels:
+            namespace_obj.metadata.labels.update(labels)
+        else:
+            namespace_obj.metadata.labels = labels
+
+        # Apply changes
+        response = v1.replace_namespace(name=namespace, body=namespace_obj)
+        return {"status": "success", "response": response.to_dict()}
+    except client.exceptions.ApiException as e:
+        return {"status": "error", "error": str(e)}
+
+
+
+
+def create_pod_psa_compliant(
+    namespace,
+    pod_name,
+    container_name,
+    image,
+    security_context,
+    psa_level,
+    ports=None,
+):
+    """
+    Create a Pod compliant with Pod Security Admission.
+    :param namespace: The namespace to create the Pod in.
+    :param pod_name: The name of the Pod.
+    :param container_name: The name of the container.
+    :param image: The container image.
+    :param security_context: Dictionary containing SecurityContext specifications.
+    :param psa_level: The PSA level to validate against (e.g., privileged, baseline, restricted).
+    :param ports: List of container ports (optional).
+    :return: Status of Pod creation.
+    """
+    core_api, _ = load_custom_kubeconfig()
+    v1 = client.CoreV1Api()
+
+    # Define container with SecurityContext
+    container = client.V1Container(
+        name=container_name,
+        image=image,
+        ports=[client.V1ContainerPort(container_port=p) for p in (ports or [])],
+        security_context=client.V1SecurityContext(**security_context) if security_context else None,
+    )
+
+    # Define Pod spec
+    pod_spec = client.V1PodSpec(containers=[container])
+
+    # Define Pod
+    pod = client.V1Pod(
+        metadata=client.V1ObjectMeta(
+            name=pod_name,
+            labels={
+                "pod-security.kubernetes.io/enforce": psa_level,
+            },
+        ),
+        spec=pod_spec,
+    )
+
+    try:
+        response = v1.create_namespaced_pod(namespace=namespace, body=pod)
+        return {"status": "success", "response": response.to_dict()}
+    except client.exceptions.ApiException as e:
+        return {"status": "error", "error": str(e)}
+
+
+
+
+
+def get_kube_proxy_pods(namespace="kube-system"):
+    """
+    Fetch and filter pods in a specific namespace containing 'kube-proxy' in their name.
+    :param namespace: The namespace to search in (default: kube-system).
+    :return: List of kube-proxy pods or an error message.
+    """
+    core_api, _ = load_custom_kubeconfig()
+    # v1 = client.CoreV1Api()
+
+    try:
+        # Fetch all pods in the namespace
+        pods = core_api.list_namespaced_pod(namespace=namespace)
+        kube_proxy_pods = [
+            pod.metadata.name for pod in pods.items if "kube-proxy" in pod.metadata.name
+        ]
+        return {"status": "success", "pods": kube_proxy_pods}
+    except client.exceptions.ApiException as e:
+        return {"status": "error", "error": str(e)}

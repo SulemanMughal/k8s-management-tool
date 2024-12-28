@@ -10,8 +10,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("master_app.urls")),
     path("", include("authentication.urls")),
-    path("pods", include("pod_management.urls")),
+    path("pods/", include("pod_management.urls")),
     path("monitoring", include("monitoring.urls")),
+    # path("security-context", include("security_context_app.urls")),
+    path("service-management/", include("service_management_app.urls")),
+    path("secrets-management/", include("secrets_management_app.urls")),
 ]
 
 

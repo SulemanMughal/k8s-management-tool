@@ -1,0 +1,39 @@
+4. Example Usage
+GET Request
+Access the endpoint to fetch and filter pods:
+GET /get-kube-proxy-pods/
+
+Filter by Namespace
+GET /get-kube-proxy-pods/?namespace=kube-system
+
+
+5. Example Response
+Success
+{
+    "pods": [
+        "kube-proxy-node-1",
+        "kube-proxy-node-2"
+    ]
+}
+
+Error
+{
+    "error": "Namespace not found"
+}
+
+
+6. Key Features
+Namespace Filtering:
+
+
+Defaults to the kube-system namespace but supports custom namespaces via query parameters.
+Pod Name Filtering:
+
+
+Retrieves only Pods containing kube-proxy in their names.
+Error Handling:
+
+
+Provides meaningful error messages for invalid namespaces or missing Pods.
+
+This implementation mimics the behavior of kubectl get pods -n kube-system | grep kube-proxy through Django, allowing for programmatic access to filtered Pod lists. Let me know if you need further assistance!

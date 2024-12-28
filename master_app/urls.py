@@ -1,13 +1,15 @@
 from django.urls import path
 
-from . import views
+from .views import index,list_nodes,describe_node,cordon_node,uncordon_node,drain_node,get_node_pod_cidr_view
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    path('nodes/list/', views.list_nodes, name='list_nodes'),
-    path('nodes/describe/<str:node_name>/', views.describe_node, name='describe_node'),
-    path('nodes/cordon/<str:node_name>/', views.cordon_node, name='cordon_node'),
-    path('nodes/uncordon/<str:node_name>/', views.uncordon_node, name='uncordon_node'),
-    path('nodes/drain/<str:node_name>/', views.drain_node, name='drain_node'),
+    path("", index, name="index"),
+    path('nodes/list/', list_nodes, name='list_nodes'),
+    path('nodes/describe/<str:node_name>/', describe_node, name='describe_node'),
+    path('nodes/cordon/<str:node_name>/', cordon_node, name='cordon_node'),
+    path('nodes/uncordon/<str:node_name>/', uncordon_node, name='uncordon_node'),
+    path('nodes/drain/<str:node_name>/', drain_node, name='drain_node'),
+    path("get-node-pod-cidr/", get_node_pod_cidr_view, name="get-node-pod-cidr"),
+
 
 ]

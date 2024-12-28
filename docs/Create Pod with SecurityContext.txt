@@ -1,0 +1,96 @@
+4. Example Usage
+POST Request
+Send a POST request to the create-pod-with-security-context/ endpoint with the following payload:
+Example Security Context
+Restrict Privilege Escalation:
+
+ {
+    "namespace": "default",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "ports": "80",
+    "security_context": {
+        "runAsUser": 1000,
+        "runAsGroup": 3000,
+        "fsGroup": 2000,
+        "allowPrivilegeEscalation": false
+    }
+}
+
+
+Add Capabilities:
+
+ {
+    "namespace": "default",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "ports": "80",
+    "security_context": {
+        "capabilities": {
+            "add": ["NET_ADMIN", "SYS_TIME"],
+            "drop": ["ALL"]
+        }
+    }
+}
+
+
+
+5. Key Features
+runAsUser:
+
+
+Specifies the UID to run the container's process.
+runAsGroup:
+
+
+Specifies the GID for the container's process.
+fsGroup:
+
+
+Specifies the GID for mounted volumes.
+allowPrivilegeEscalation:
+
+
+Restricts privilege escalation (e.g., via sudo).
+capabilities:
+
+
+Add or drop Linux capabilities for enhanced security.
+Namespace Support:
+
+
+Create Pods in specific namespaces.
+
+6. Example Response
+Success
+{
+    "message": "Pod created successfully with SecurityContext",
+    "response": {
+        "metadata": {
+            "name": "example-pod",
+            "namespace": "default",
+            ...
+        },
+        "status": {
+            ...
+        }
+    }
+}
+
+Error
+{
+    "error": "Invalid ports or security_context format"
+}
+
+
+7. Use Cases
+Enforcing Security Policies:
+Ensure Pods run with non-root users and minimal privileges.
+Enhancing Security:
+Add or drop specific Linux capabilities for secure container operations.
+Compliance:
+Satisfy organizational security standards and policies.
+
+This implementation enables specifying SecurityContext for Pods through Django, allowing fine-grained security configurations. Let me know if you need further assistance!

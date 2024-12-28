@@ -26,7 +26,14 @@ INSTALLED_APPS = [
     'master_app',
     'authentication',
     'pod_management',
-    "monitoring"
+    "monitoring", 
+    "security_context_app",
+
+    # service management app
+    'service_management_app',
+
+    # Kubernetes Secrets Management App
+    'secrets_management_app',
 ]
 
 MIDDLEWARE = [

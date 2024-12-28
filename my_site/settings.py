@@ -25,7 +25,8 @@ INSTALLED_APPS = [
     # local apps
     'master_app',
     'authentication',
-    'pod_management'
+    'pod_management',
+    "monitoring"
 ]
 
 MIDDLEWARE = [

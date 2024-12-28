@@ -79,3 +79,84 @@ Connection Termination:
 
 
 The port-forwarding session will terminate if the WebSocket connection is closed.
+
+
+
+#-----------------------
+
+
+POST Request
+Send a POST request to the endpoint create-pod-with-resources/ with the following JSON payload:
+{
+    "namespace": "default",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "ports": "80,443",
+    "resources": {
+        "requests": {
+            "cpu": "100m",
+            "memory": "128Mi"
+        },
+        "limits": {
+            "cpu": "500m",
+            "memory": "512Mi"
+        }
+    }
+}
+
+
+Key Features
+Resource Requests and Limits:
+
+
+Requests: Guaranteed minimum resources for the container.
+Limits: Maximum resources the container can consume.
+Namespace Support:
+
+
+Create Pods in specific namespaces.
+Customizable Ports:
+
+
+Specify container ports dynamically.
+
+
+
+
+Example Response
+Success
+{
+    "message": "Pod created successfully with resource requests and limits",
+    "response": {
+        "metadata": {
+            "name": "example-pod",
+            "namespace": "default",
+            ...
+        },
+        "status": {
+            ...
+        }
+    }
+}
+
+Error
+{
+    "error": "Invalid resources format"
+}
+
+
+
+Use Cases
+Resource Management:
+
+
+Ensure fair resource allocation among Pods in the cluster.
+Prevent Resource Overuse:
+
+
+Set maximum resource limits to prevent noisy neighbor issues.
+Efficient Scheduling:
+
+
+Help the Kubernetes scheduler optimize node utilization with resource requests.

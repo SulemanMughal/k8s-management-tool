@@ -1,0 +1,69 @@
+4. Example Usage
+POST Request
+Send a POST request to the create-pod-with-startup-probe/ endpoint with the following payload:
+{
+    "namespace": "default",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "probe_command": ["cat", "/tmp/healthy"],
+    "initial_delay_seconds": 10,
+    "period_seconds": 5,
+    "failure_threshold": 30,
+    "ports": "80,443"
+}
+
+
+5. Key Features
+Startup Probe Configuration:
+
+
+The startupProbe ensures that the application is fully initialized before receiving traffic.
+Customizable Parameters:
+
+
+initial_delay_seconds: Time to wait before starting the probe.
+period_seconds: Frequency of probe checks.
+failure_threshold: Number of failed attempts before the container is restarted.
+Namespace Support:
+
+
+Specify the namespace for the Pod.
+
+6. Example Response
+Success
+{
+    "message": "Pod created successfully with startupProbe",
+    "response": {
+        "metadata": {
+            "name": "example-pod",
+            "namespace": "default",
+            ...
+        },
+        "status": {
+            ...
+        }
+    }
+}
+
+Error
+{
+    "error": "Invalid probe command"
+}
+
+
+7. Use Cases
+Application Initialization:
+
+
+Ensure that the application inside the container is ready before being marked as healthy.
+Custom Initialization Logic:
+
+
+Use a custom script or command (e.g., checking files, services, or other readiness criteria).
+Prevents Premature Restarts:
+
+
+Helps avoid restarting a container that is still in the process of initializing.
+
+This implementation enables Pods to use a startupProbe in their specifications through Django, ensuring smooth startup and deployment of applications. Let me know if you need further assistance!

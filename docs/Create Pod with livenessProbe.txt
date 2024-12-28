@@ -1,0 +1,71 @@
+4. Example Usage
+POST Request
+Send a POST request to the create-pod-with-liveness-probe/ endpoint with the following payload:
+{
+    "namespace": "default",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "probe_command": ["cat", "/tmp/healthy"],
+    "initial_delay_seconds": 10,
+    "period_seconds": 5,
+    "failure_threshold": 3,
+    "success_threshold": 1,
+    "ports": "80,443"
+}
+
+
+5. Key Features
+Liveness Probe Configuration:
+
+
+Ensures that the container is restarted if it becomes unhealthy.
+Customizable Parameters:
+
+
+initial_delay_seconds: Wait time before starting the probe.
+period_seconds: Frequency of liveness checks.
+failure_threshold: Number of consecutive failures before the probe fails.
+success_threshold: Number of successes before the probe is marked successful.
+Namespace Support:
+
+
+Specify the namespace for the Pod.
+
+6. Example Response
+Success
+{
+    "message": "Pod created successfully with livenessProbe",
+    "response": {
+        "metadata": {
+            "name": "example-pod",
+            "namespace": "default",
+            ...
+        },
+        "status": {
+            ...
+        }
+    }
+}
+
+Error
+{
+    "error": "Invalid probe command"
+}
+
+
+7. Use Cases
+Health Monitoring:
+
+
+Detect and restart containers that have stopped responding.
+Improved Application Resilience:
+
+
+Automatically recover from application failures.
+Custom Logic:
+
+
+Use scripts or commands (e.g., checking file existence, application health endpoints) for liveness checks.
+
+This implementation enables Pods to use a livenessProbe in their specifications through Django, ensuring high availability and resiliency. Let me know if you need further assistance!

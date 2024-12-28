@@ -11,6 +11,7 @@ urlpatterns = [
     path("", include("master_app.urls")),
     path("", include("authentication.urls")),
     path("pods", include("pod_management.urls")),
+    path("monitoring", include("monitoring.urls")),
 ]
 
 

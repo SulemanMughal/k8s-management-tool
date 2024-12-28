@@ -1,0 +1,98 @@
+4. Example Usage
+POST Request
+Send a POST request to the create-pod-with-readiness-probe/ endpoint with one of the following payloads:
+Using Command
+{
+    "namespace": "default",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "probe_command": ["cat", "/tmp/ready"],
+    "initial_delay_seconds": 5,
+    "period_seconds": 10,
+    "failure_threshold": 3,
+    "success_threshold": 1,
+    "ports": "80,443"
+}
+
+Using HTTP GET
+{
+    "namespace": "default",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "http_get_path": "/healthz",
+    "http_get_port": 80,
+    "initial_delay_seconds": 5,
+    "period_seconds": 10,
+    "failure_threshold": 3,
+    "success_threshold": 1,
+    "ports": "80,443"
+}
+
+Using TCP Socket
+{
+    "namespace": "default",
+    "pod_name": "example-pod",
+    "container_name": "example-container",
+    "image": "nginx",
+    "tcp_socket_port": 80,
+    "initial_delay_seconds": 5,
+    "period_seconds": 10,
+    "failure_threshold": 3,
+    "success_threshold": 1,
+    "ports": "80,443"
+}
+
+
+5. Key Features
+Readiness Probe Options:
+
+
+Supports exec, http_get, and tcp_socket probes.
+Customizable Parameters:
+
+
+Adjust delays, intervals, and thresholds to suit your application's needs.
+Namespace Support:
+
+
+Specify the namespace for the Pod.
+
+6. Example Response
+Success
+{
+    "message": "Pod created successfully with readinessProbe",
+    "response": {
+        "metadata": {
+            "name": "example-pod",
+            "namespace": "default",
+            ...
+        },
+        "status": {
+            ...
+        }
+    }
+}
+
+Error
+{
+    "error": "At least one readiness check method (exec, http_get, tcp_socket) must be specified."
+}
+
+
+7. Use Cases
+Traffic Management:
+
+
+Ensure that Pods are only added to Service endpoints when they are ready to serve traffic.
+Health Monitoring:
+
+
+Monitor specific application states or endpoints before marking the Pod as ready.
+Rolling Updates:
+
+
+Use readiness probes to prevent downtime during application updates.
+
+This implementation allows Pods to use a readinessProbe in their specifications through Django, ensuring robust application deployment. Let me know if you need further assistance!

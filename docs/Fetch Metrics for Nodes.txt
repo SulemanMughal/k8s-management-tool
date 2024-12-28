@@ -1,0 +1,83 @@
+4. Example Usage
+Fetch Node Metrics
+Request:
+
+ GET /get-node-metrics/
+
+
+Response:
+
+ {
+    "nodes": [
+        {
+            "name": "node-1",
+            "cpu": "500m",
+            "memory": "128Mi"
+        },
+        {
+            "name": "node-2",
+            "cpu": "250m",
+            "memory": "64Mi"
+        }
+    ]
+}
+
+
+
+Fetch Pod Metrics
+Request for all namespaces:
+
+ GET /get-pod-metrics/
+
+
+Request for a specific namespace:
+
+ GET /get-pod-metrics/?namespace=default
+
+
+Response:
+
+ {
+    "pods": [
+        {
+            "namespace": "default",
+            "name": "nginx-pod",
+            "containers": [
+                {
+                    "name": "nginx",
+                    "cpu": "100m",
+                    "memory": "32Mi"
+                }
+            ]
+        },
+        {
+            "namespace": "kube-system",
+            "name": "coredns-pod",
+            "containers": [
+                {
+                    "name": "coredns",
+                    "cpu": "50m",
+                    "memory": "16Mi"
+                }
+            ]
+        }
+    ]
+}
+
+
+
+5. Prerequisites
+Metrics Server: Ensure the Kubernetes Metrics Server is installed and running in your cluster. Install it using:
+ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+
+
+6. Use Cases
+Cluster Resource Monitoring:
+Get real-time CPU and memory usage for nodes and pods.
+Debugging and Scaling:
+Identify pods or nodes under heavy load and scale resources accordingly.
+
+
+
+This implementation provides backend code for kubectl top functionality through Django. Let me know if you need further enhancements!

@@ -15,6 +15,8 @@ urlpatterns = [
     # path("security-context", include("security_context_app.urls")),
     path("service-management/", include("service_management_app.urls")),
     path("secrets-management/", include("secrets_management_app.urls")),
+    path("replicasets-management/", include("replicasets_management.urls")),
+    path("deployments-management/", include("deployment_management_app.urls")),
 ]
 
 

@@ -20,12 +20,12 @@ def create_secret(namespace, secret_name, secret_type, secret_data):
         data=secret_data,
     )
 
-    print(secret)
+    # print(secret)
 
     try:
         response = core_api.create_namespaced_secret(namespace=namespace, body=secret)
 
-        print(response)
+        # print(response)
         return {"status": "success", "response": response.to_dict()}
     except client.exceptions.ApiException as e:
         # print(e)

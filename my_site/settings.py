@@ -34,6 +34,12 @@ INSTALLED_APPS = [
 
     # Kubernetes Secrets Management App
     'secrets_management_app',
+
+    # Kubernetes ReplicaSets Management App
+    "replicasets_management",
+
+    # Kuberenetes Deployment Objects Management App
+    'deployment_management_app',
 ]
 
 MIDDLEWARE = [

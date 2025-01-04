@@ -1,3 +1,104 @@
+#### Pre-reuisites before commit code
+
+- Remove `backports.zoneinfo` from requirements.txt
+
+
+
+#### Setup Project
+
+- Get Kubernetes Configuration File Consume Kuberentes-API
+
+
+
+#### IP Addresses For the server
+
+- Master Node : 104.131.83.201
+- Worker Node-1 : 104.131.43.246
+- Worker Node-2 : 104.131.48.221
+
+#### Access Servers through ssh-key
+
+    ssh -i ~/.ssh/new_droplet_key root@104.131.48.221
+
+
+#### Development Env File
+
+    https://docs.google.com/document/d/19DmsHYfJbxD4EPYLAtKQZsr4CbSloBHWPpp3jmLOQqE/edit?usp=sharing
+
+
+#### To Install and Configure Postgresql
+
+    https://docs.google.com/document/d/1neeVOj4w_N_7quNffLAbXSHpNnGY9R1qU5s0XZTF1pg/edit?usp=sharing
+
+
+#### To Test Database Connection:
+
+    python3 ./my_site/test_dbConnection.py
+
+
+#### To Test Kubernetes API Access:
+    python3 ./my_sites/test_access_kube.py
+
+
+
+#### First-Time Configure Project
+
+    - python3 -m venv my_env
+    - source my_env/bin/activate
+    - pip3 install -r requirements.txt
+    - python3 manage.py makemigrations
+    - python3 manage.py migrate
+
+
+#### CreateSuperuser
+
+    - python3 manage.py createsuperuser
+
+
+
+
+#### Start A Development Server
+
+    - python3 manage.py runserver
+
+#### Access Web Interface
+
+    - http://localhost:8000
+
+
+
+#### Postman to test APIS
+
+    https://hackathon-2024-6118.postman.co/workspace/My-Workspace~a751ad62-1269-4a22-8e20-42617193ecf9/collection/29333613-6a58b6df-3a46-4412-b89a-dec5944f24c8
+
+#### --------------------------------------------------------------------------------------------
+
+
+#### Features List:
+
+
+- Cluster Nodes
+
+    - List Down All Nodes
+    - Fetch the podCIDR for a specific node.
+    - Describe A Node
+
+
+
+- DaemonSet Management
+
+    - Create DaemonSet 
+    - Describde
+    - List 
+    - Update Container Image
+    - Delete
+    - Get Pods Management By All DaemonSet
+    - Get Pods Managed BY A Specific DaemonSet Object
+    - DaemonSet with a nodeSelector to restrict it to specific nodes
+    - update a DaemonSet with nodeAffinity
+    - Mimic pausing a DaemonSet by removing nodeSelector or setting a taint.
+    - Resume a DaemonSet by re-adding the nodeSelector.
+
 #   template inheritance
 
 

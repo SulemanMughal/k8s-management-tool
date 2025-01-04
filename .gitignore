@@ -99,3 +99,16 @@ Db
 
 
 kubeconfig.yaml
+
+
+# ignore python virtual environment
+my_env
+
+my_env/
+
+
+production.yaml
+
+digitalocean.pub
+digitalocean
+

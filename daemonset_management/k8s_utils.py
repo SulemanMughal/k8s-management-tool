@@ -1,6 +1,9 @@
 from my_site.utils import load_custom_kubeconfig
 from kubernetes import client
 import json
+import time
+from datetime import datetime
+
 
 def create_daemonset_object(objName, objLabels, matchLabels, templateLabels, containerName, containerImage):
     """
@@ -337,3 +340,138 @@ def change_daemonset_namespace(current_namespace, daemonset_name, new_namespace)
         return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status}
     
 
+def daemonset_rollout_status( namespace, name):
+    """
+    Get the rollout status of a DaemonSet.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    try:
+        daemonset = apps_api.read_namespaced_daemon_set_status(name=name, namespace=namespace)
+        desired_number_scheduled = daemonset.status.desired_number_scheduled
+        current_number_scheduled = daemonset.status.current_number_scheduled
+        number_ready = daemonset.status.number_ready
+
+        if desired_number_scheduled == current_number_scheduled == number_ready:
+            details =  {
+                "status": "Successful",
+                "message": f"DaemonSet {name} has rolled out successfully. All {desired_number_scheduled} Pods are ready."
+            }
+            return {"status": "success", "response": details}
+        else:
+            details =  {
+                "status": "In Progress",
+                "message": f"DaemonSet {name} is rolling out. Desired: {desired_number_scheduled}, Current: {current_number_scheduled}, Ready: {number_ready}."
+            }
+            return {"status": "success", "response": details}
+    except client.exceptions.ApiException as e:
+        # raise Exception(f"Error getting rollout status for DaemonSet {name}: {e}")
+        return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status}
+
+
+
+def daemonset_rollout_status_periodic(namespace, name, timeout=300, interval=10):
+    """
+    Get the rollout status of a DaemonSet with periodic polling until the rollout completes.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    start_time = time.time()
+    
+    while True:
+        try:
+            daemonset = apps_api.read_namespaced_daemon_set_status(name=name, namespace=namespace)
+            desired_number_scheduled = daemonset.status.desired_number_scheduled
+            current_number_scheduled = daemonset.status.current_number_scheduled
+            number_ready = daemonset.status.number_ready
+
+            if desired_number_scheduled == current_number_scheduled == number_ready:
+                details = {
+                    "status": "Successful",
+                    "message": f"DaemonSet {name} has rolled out successfully. All {desired_number_scheduled} Pods are ready."
+                }
+                return {"status": "success", "response": details}
+            else:
+                details = {
+                    "status": "In Progress",
+                    "message": f"DaemonSet {name} is rolling out. Desired: {desired_number_scheduled}, Current: {current_number_scheduled}, Ready: {number_ready}."
+                }
+                # print(details["message"])
+
+            # Check if timeout has been reached
+            if time.time() - start_time > timeout:
+                details = {
+                    "status": "Timeout",
+                    "message": f"DaemonSet {name} rollout timed out. Desired: {desired_number_scheduled}, Current: {current_number_scheduled}, Ready: {number_ready}."
+                }
+                return {"status": "error", "response": details}
+
+            # Wait for the specified interval before checking again
+            time.sleep(interval)
+        
+        except client.exceptions.ApiException as e:
+            return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status}
+        
+
+def get_daemonset_events(namespace, daemonset_name):
+    """
+    Get events for a specific DaemonSet in a given namespace.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    try:
+        # List all events in the namespace
+        events = core_api.list_namespaced_event(namespace=namespace).items
+        # Filter events related to the DaemonSet
+        daemonset_events = [event for event in events if event.involved_object.kind == "DaemonSet" and event.involved_object.name == daemonset_name]
+        # Convert events to a list of dictionaries
+        events_list = [{"message": event.message, "reason": event.reason, "type": event.type, "timestamp": event.last_timestamp} for event in daemonset_events]
+        return {"status": "success", "response": events_list}
+    except client.exceptions.ApiException as e:
+        return {"status": "error", "error": str(e.reason), "error-status": e.status} # Return error message
+    
+
+def update_rollout_history( namespace, name, new_image):
+    """
+    Update the rollout history in the DaemonSet annotations.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    try:
+        # Retrieve the existing DaemonSet
+        daemonset = apps_api.read_namespaced_daemon_set(name=name, namespace=namespace)
+        annotations = daemonset.metadata.annotations or {}
+        history = json.loads(annotations.get("rollout-history", "[]"))
+
+        # Add the new rollout entry
+        history.append({
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "image": new_image
+        })
+
+        # Update the annotations
+        annotations["rollout-history"] = json.dumps(history)
+        patch_body = {"metadata": {"annotations": annotations}}
+
+        response = apps_api.patch_namespaced_daemon_set(
+            name=name,
+            namespace=namespace,
+            body=patch_body
+        )
+        # return response
+        return {"status": "success", "response": response.to_dict()}
+    except client.exceptions.ApiException as e:
+        # raise Exception(f"Error updating rollout history: {e}")
+        return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status} # Return error message
+
+
+def get_rollout_history(namespace, name):
+    """
+    Get the rollout history from the DaemonSet annotations.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    try:
+        daemonset = apps_api.read_namespaced_daemon_set(name=name, namespace=namespace)
+        annotations = daemonset.metadata.annotations or {}
+        history = json.loads(annotations.get("rollout-history", "[]"))
+        # return history
+        return {"status": "success", "response": history}
+    except client.exceptions.ApiException as e:
+        # raise Exception(f"Error fetching rollout history: {e}")
+        return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status} # Return error message

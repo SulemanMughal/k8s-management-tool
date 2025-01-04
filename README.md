@@ -100,6 +100,10 @@
     - Resume a DaemonSet by re-adding the nodeSelector.
     - Get the nodes on which a specific DaemonSet is deployed.
     - change the namespace of a DaemonSet.
+    - Get the rollout status of a DaemonSet.
+    - Get the rollout status of a DaemonSet with periodic polling until the rollout completes.
+    - Rollout History Management (Update, Retrieve)
+    - Event List For A DaemonSet Object 
 
 #   template inheritance
 

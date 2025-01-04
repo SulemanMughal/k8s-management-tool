@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
-from .k8s_utils import create_daemonset, describe_daemonset, list_daemonsets, update_daemonset_image, delete_daemonset, get_pods_managed_by_daemonsets, get_pods_managed_by_specific_daemonset, update_daemonset_node_selector, update_daemonset_node_affinity,pause_daemonset,resume_daemonset, get_nodes_for_daemonset, change_daemonset_namespace
+from .k8s_utils import create_daemonset, describe_daemonset, list_daemonsets, update_daemonset_image, delete_daemonset, get_pods_managed_by_daemonsets, get_pods_managed_by_specific_daemonset, update_daemonset_node_selector, update_daemonset_node_affinity,pause_daemonset,resume_daemonset, get_nodes_for_daemonset, change_daemonset_namespace, daemonset_rollout_status,daemonset_rollout_status_periodic, get_daemonset_events,update_rollout_history, get_rollout_history
 import json
 
 @csrf_exempt
@@ -296,6 +296,98 @@ def change_daemonset_namespace_view(request):
         newNamespace = data.get("newNamespace")
         try:
             response = change_daemonset_namespace( namespace, objName, newNamespace)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+
+def daemonset_rollout_status_view(request):
+    """
+    Django view to get the rollout status of a DaemonSet.
+    """
+    if request.method == "GET":
+        namespace = request.GET.get("namespace")
+        name = request.GET.get("name")
+        try:
+            response = daemonset_rollout_status(namespace, name)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+
+def daemonset_rollout_status_periodic_view(request):
+    """
+    Django view to get the rollout status of a DaemonSet periodically.
+    """
+    if request.method == "GET":
+        namespace = request.GET.get("namespace")
+        name = request.GET.get("name")
+        try:
+            response = daemonset_rollout_status_periodic(namespace, name)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+
+def get_daemonset_events_view(request):
+    """
+    Django view to get events of a DaemonSet.
+    """
+    if request.method == "GET":
+        namespace = request.GET.get("namespace")
+        name = request.GET.get("name")
+        try:
+            response = get_daemonset_events(namespace, name)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+
+@csrf_exempt
+def update_rollout_history_view(request):
+    """
+    Django view to update the rollout history of a DaemonSet.
+    """
+    if request.method == "POST":
+        data = json.loads(request.body)
+        namespace = data.get("namespace", "default")
+        objName = data.get("name")
+        newRolloutHistory = data.get("newRolloutHistory")
+        try:
+            response = update_rollout_history(namespace, objName, newRolloutHistory)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+def get_rollout_history_view(request):
+    """
+    Django view to get the rollout history of a DaemonSet.
+    """
+    if request.method == "GET":
+        namespace = request.GET.get("namespace")
+        name = request.GET.get("name")
+        try:
+            response = get_rollout_history(namespace, name)
             if response["status"] == "error":
                 return JsonResponse({"error": response["error"]}, status=response["error-status"])
             return JsonResponse({"response": response["response"]})

@@ -475,3 +475,66 @@ def get_rollout_history(namespace, name):
     except client.exceptions.ApiException as e:
         # raise Exception(f"Error fetching rollout history: {e}")
         return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status} # Return error message
+
+
+
+def update_rollingupdate_strategy( namespace, name, max_unavailable):
+    """
+    Update the RollingUpdate strategy for a DaemonSet.
+    """
+    """
+    This function updates the updateStrategy of a DaemonSet to enable RollingUpdate and configures maxUnavailable.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    try:
+        patch_body = {
+            "spec": {
+                "updateStrategy": {
+                    "type": "RollingUpdate",
+                    "rollingUpdate": {
+                        "maxUnavailable": max_unavailable
+                    }
+                }
+            }
+        }
+        response = apps_api.patch_namespaced_daemon_set(
+            name=name,
+            namespace=namespace,
+            body=patch_body
+        )
+        # return response
+        return {"status": "success", "response": response.to_dict()}
+    except client.exceptions.ApiException as e:
+        # raise Exception(f"Error updating RollingUpdate strategy: {e}")
+        return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status} # Return error message
+
+
+
+def update_daemonset_strategy( namespace, name, min_ready_seconds, max_unavailable, max_surge):
+    """
+    Update the minReadySeconds, maxUnavailable, and maxSurge for a DaemonSet.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    try:
+        patch_body = {
+            "spec": {
+                "minReadySeconds": min_ready_seconds,
+                "updateStrategy": {
+                    "type": "RollingUpdate",
+                    "rollingUpdate": {
+                        "maxUnavailable": max_unavailable,
+                        "maxSurge": max_surge
+                    }
+                }
+            }
+        }
+        response = apps_api.patch_namespaced_daemon_set(
+            name=name,
+            namespace=namespace,
+            body=patch_body
+        )
+        # return response
+        return {"status": "success", "response": response.to_dict()}
+    except client.exceptions.ApiException as e:
+        # raise Exception(f"Error updating DaemonSet strategy: {e}")
+        return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status} # Return error message

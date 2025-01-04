@@ -6,7 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
-from .k8s_utils import create_daemonset, describe_daemonset, list_daemonsets, update_daemonset_image, delete_daemonset, get_pods_managed_by_daemonsets, get_pods_managed_by_specific_daemonset, update_daemonset_node_selector, update_daemonset_node_affinity,pause_daemonset,resume_daemonset, get_nodes_for_daemonset, change_daemonset_namespace, daemonset_rollout_status,daemonset_rollout_status_periodic, get_daemonset_events,update_rollout_history, get_rollout_history
+from .k8s_utils import create_daemonset, describe_daemonset, list_daemonsets, update_daemonset_image, delete_daemonset, get_pods_managed_by_daemonsets, get_pods_managed_by_specific_daemonset, update_daemonset_node_selector, update_daemonset_node_affinity,pause_daemonset,resume_daemonset, get_nodes_for_daemonset, change_daemonset_namespace, daemonset_rollout_status,daemonset_rollout_status_periodic, get_daemonset_events,update_rollout_history, get_rollout_history,update_rollingupdate_strategy,update_daemonset_strategy
+
 import json
 
 @csrf_exempt
@@ -388,6 +389,50 @@ def get_rollout_history_view(request):
         name = request.GET.get("name")
         try:
             response = get_rollout_history(namespace, name)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+
+@csrf_exempt
+def update_rollingupdate_strategy_view(request):
+    """
+    Django view to update the rolling update strategy of a DaemonSet.
+    """
+    if request.method == "POST":
+        data = json.loads(request.body)
+        namespace = data.get("namespace", "default")
+        objName = data.get("name")
+        max_unavailable = data.get("max_unavailable")
+        try:
+            response = update_rollingupdate_strategy(namespace, objName, max_unavailable)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+
+@csrf_exempt
+def update_daemonset_strategy_view(request):
+    """
+    Django view to update the rolling update strategy of a DaemonSet.
+    """
+    if request.method == "POST":
+        data = json.loads(request.body)
+        namespace = data.get("namespace", "default")
+        objName = data.get("name")
+        max_unavailable = data.get("maxUnavailable")
+        max_surge = data.get("maxSurge")
+        min_ready_secs = data.get("minReadySeconds")
+        try:
+            response = update_daemonset_strategy(namespace, objName, min_ready_secs,max_unavailable,max_surge)
             if response["status"] == "error":
                 return JsonResponse({"error": response["error"]}, status=response["error-status"])
             return JsonResponse({"response": response["response"]})

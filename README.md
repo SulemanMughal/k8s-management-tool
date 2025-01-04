@@ -104,6 +104,7 @@
     - Get the rollout status of a DaemonSet with periodic polling until the rollout completes.
     - Rollout History Management (Update, Retrieve)
     - Event List For A DaemonSet Object 
+    - Update Function to Apply RollingUpdate Strategy
 
 #   template inheritance
 

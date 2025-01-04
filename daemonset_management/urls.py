@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import create_daemonset_view, describe_daemonset_view, list_daemonsets_view, update_daemonset_image_view, delete_daemonset_view, get_pods_managed_by_daemonsets_view, get_pods_managed_by_specific_daemonset_view, update_daemonset_node_selector_view, update_daemonset_node_affinity_view, pause_daemonset_view, resume_daemonset_view
+from .views import create_daemonset_view, describe_daemonset_view, list_daemonsets_view, update_daemonset_image_view, delete_daemonset_view, get_pods_managed_by_daemonsets_view, get_pods_managed_by_specific_daemonset_view, update_daemonset_node_selector_view, update_daemonset_node_affinity_view, pause_daemonset_view, resume_daemonset_view,get_nodes_for_daemonset_view, change_daemonset_namespace_view
 urlpatterns = [
     path('daemonset/create', create_daemonset_view, name='create_daemonset'),
     path('daemonset/describe', describe_daemonset_view, name='describe_daemonset'),
@@ -12,4 +12,6 @@ urlpatterns = [
     path('daemonset/update/node-affinity', update_daemonset_node_affinity_view, name='update_daemonset_node_affinity'),
     path('daemonset/pause', pause_daemonset_view, name='pause_daemonset'),
     path('daemonset/resume', resume_daemonset_view, name='resume_daemonset'),
+    path("daemonset/nodes", get_nodes_for_daemonset_view, name="get_nodes_for_daemonset"),
+    path("daemonset/change-namespace", change_daemonset_namespace_view, name="change_daemonset_namespace")
 ]

@@ -98,6 +98,8 @@
     - update a DaemonSet with nodeAffinity
     - Mimic pausing a DaemonSet by removing nodeSelector or setting a taint.
     - Resume a DaemonSet by re-adding the nodeSelector.
+    - Get the nodes on which a specific DaemonSet is deployed.
+    - change the namespace of a DaemonSet.
 
 #   template inheritance
 

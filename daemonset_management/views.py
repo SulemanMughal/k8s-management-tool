@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
-from .k8s_utils import create_daemonset, describe_daemonset, list_daemonsets, update_daemonset_image, delete_daemonset, get_pods_managed_by_daemonsets, get_pods_managed_by_specific_daemonset, update_daemonset_node_selector, update_daemonset_node_affinity,pause_daemonset,resume_daemonset
+from .k8s_utils import create_daemonset, describe_daemonset, list_daemonsets, update_daemonset_image, delete_daemonset, get_pods_managed_by_daemonsets, get_pods_managed_by_specific_daemonset, update_daemonset_node_selector, update_daemonset_node_affinity,pause_daemonset,resume_daemonset, get_nodes_for_daemonset, change_daemonset_namespace
 import json
 
 @csrf_exempt
@@ -257,6 +257,45 @@ def resume_daemonset_view(request):
         node_selector=data.get("node_selector")
         try:
             response = resume_daemonset( namespace, objName,node_selector)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+
+def get_nodes_for_daemonset_view(request):
+    """
+    Django view to get nodes for a DaemonSet.
+    """
+    if request.method == "GET":
+        namespace = request.GET.get("namespace")
+        objName = request.GET.get("name")
+        try:
+            response = get_nodes_for_daemonset(namespace, objName)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=response["error-status"])
+            return JsonResponse({"response": response["response"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+    
+
+@csrf_exempt
+def change_daemonset_namespace_view(request):
+    """
+    Django view to change the namespace of a DaemonSet.
+    """
+    if request.method == "POST":
+        data = json.loads(request.body)
+        namespace = data.get("namespace", "default")
+        objName = data.get("name")
+        newNamespace = data.get("newNamespace")
+        try:
+            response = change_daemonset_namespace( namespace, objName, newNamespace)
             if response["status"] == "error":
                 return JsonResponse({"error": response["error"]}, status=response["error-status"])
             return JsonResponse({"response": response["response"]})

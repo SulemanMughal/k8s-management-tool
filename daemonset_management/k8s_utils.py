@@ -1,6 +1,6 @@
 from my_site.utils import load_custom_kubeconfig
 from kubernetes import client
-
+import json
 
 def create_daemonset_object(objName, objLabels, matchLabels, templateLabels, containerName, containerImage):
     """
@@ -295,4 +295,45 @@ def resume_daemonset( namespace, name, node_selector):
     except client.exceptions.ApiException as e:
         return {"status": "error", "error": str(e.reason), "error-status": e.status} # Return error message
 
+
+def get_nodes_for_daemonset(namespace, daemonset_name):
+    """
+    Get the nodes on which a specific DaemonSet is deployed.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    try:
+        daemonset = apps_api.read_namespaced_daemon_set(name=daemonset_name, namespace=namespace)
+        selector = daemonset.spec.selector.match_labels
+        label_selector = ",".join([f"{key}={value}" for key, value in selector.items()])
+        pods = core_api.list_namespaced_pod(namespace=namespace, label_selector=label_selector).items
+        nodes = [pod.spec.node_name for pod in pods]
+        return {"status": "success", "response": nodes}
+    except client.exceptions.ApiException as e:
+        return {"status": "error", "error": str(e.reason), "error-status": e.status}
+    
+
+
+def change_daemonset_namespace(current_namespace, daemonset_name, new_namespace):
+    """
+    Change the namespace of a DaemonSet by recreating it in the new namespace.
+    """
+    core_api, apps_api = load_custom_kubeconfig()
+    try:
+        # Get the existing DaemonSet
+        daemonset = apps_api.read_namespaced_daemon_set(name=daemonset_name, namespace=current_namespace)
+        
+        # Create a new DaemonSet in the new namespace
+        daemonset.metadata.namespace = new_namespace
+        daemonset.metadata.resource_version = None  # Clear resource version to create a new object
+        response = apps_api.create_namespaced_daemon_set(namespace=new_namespace, body=daemonset)
+        
+        # Delete the old DaemonSet
+        apps_api.delete_namespaced_daemon_set(name=daemonset_name, namespace=current_namespace, body=client.V1DeleteOptions())
+        
+        return {"status": "success", "response": response.to_dict()}
+    except client.exceptions.ApiException as e:
+        # print(json.loads(e.body)["message"])
+        # print(dir(e))
+        return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status}
+    
 

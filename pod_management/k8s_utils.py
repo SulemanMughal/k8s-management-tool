@@ -1,8 +1,7 @@
 from my_site.utils import load_custom_kubeconfig
 from kubernetes import client
 from kubernetes.stream import portforward
-
-
+import json
 
 def create_pod(namespace, pod_name, container_name, image, ports=None, env_vars=None):
 
@@ -128,8 +127,10 @@ def update_pod(namespace, pod_name, container_name, image, ports=None, env_vars=
         return {"status": "success", "response": response.to_dict()}
 
     except client.exceptions.ApiException as e:
+        # print(e)
 
-        return {"status": "error", "error": str(e)}
+        # return {"status": "error", "error": str(e)}
+        return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status} # Return error message
 
 
 def delete_pod(namespace, pod_name):
@@ -153,7 +154,8 @@ def delete_pod(namespace, pod_name):
 
     except client.exceptions.ApiException as e:
 
-        return {"status": "error", "error": str(e)}
+        # return {"status": "error", "error": str(e)}
+        return {"status": "error", "error": str(json.loads(e.body)["message"]), "error-status": e.status} # Return error message
 
 
 
@@ -649,10 +651,8 @@ def get_kube_proxy_pods(namespace="kube-system"):
     :return: List of kube-proxy pods or an error message.
     """
     core_api, _ = load_custom_kubeconfig()
-    # v1 = client.CoreV1Api()
 
     try:
-        # Fetch all pods in the namespace
         pods = core_api.list_namespaced_pod(namespace=namespace)
         kube_proxy_pods = [
             pod.metadata.name for pod in pods.items if "kube-proxy" in pod.metadata.name
@@ -660,3 +660,37 @@ def get_kube_proxy_pods(namespace="kube-system"):
         return {"status": "success", "pods": kube_proxy_pods}
     except client.exceptions.ApiException as e:
         return {"status": "error", "error": str(e)}
+
+
+
+# Get Pods By Label Selector
+def get_pods_by_label_selector(namespace, label_selector):
+    """
+    Get pods by label selector in a given namespace.
+    """
+    core_api, _ = load_custom_kubeconfig()
+    try:
+        pods = core_api.list_namespaced_pod(namespace=namespace, label_selector=label_selector).items
+        pod_list = [{"name": pod.metadata.name, "namespace": pod.metadata.namespace} for pod in pods]
+        return {"status": "success", "pods": pod_list}
+    except client.exceptions.ApiException as e:
+        # print(e)
+        return {"status": "error", "error": str(e.reason), "error-status": e.status}
+    
+
+# container images that are available in kubernetes
+
+def list_container_images():
+    """
+    List all container images that are available in Kubernetes.
+    """
+    core_api, _ = load_custom_kubeconfig()
+    try:
+        pods = core_api.list_pod_for_all_namespaces().items
+        images = set()
+        for pod in pods:
+            for container in pod.spec.containers:
+                images.add(container.image)
+        return {"status": "success", "images": list(images)}
+    except client.exceptions.ApiException as e:
+        return {"status": "error", "error": str(e.reason), "error-status": e.status}

@@ -1,8 +1,13 @@
 
 from django.http import JsonResponse
 
-from .k8s_utils import create_pod, get_pod, update_pod, delete_pod, list_pods,port_forward_pod, get_pod_logs, create_pod_with_resources, create_pod_with_startup_probe, create_pod_with_liveness_probe, create_pod_with_readiness_probe, create_pod_with_security_context, set_namespace_psa_labels, create_pod_psa_compliant, get_kube_proxy_pods
+from .k8s_utils import create_pod, get_pod, update_pod, delete_pod, list_pods,port_forward_pod, get_pod_logs, create_pod_with_resources, create_pod_with_startup_probe, create_pod_with_liveness_probe, create_pod_with_readiness_probe, create_pod_with_security_context, set_namespace_psa_labels, create_pod_psa_compliant, get_kube_proxy_pods, get_pods_by_label_selector, list_container_images
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
+import json
+
+import traceback
 
 def create_pod_view(request):
 
@@ -62,27 +67,25 @@ def get_pod_view(request):
 
 
 
+@csrf_exempt
 def update_pod_view(request):
 
     if request.method == "POST":
 
-        namespace = request.POST.get("namespace", "default")
+        data = json.loads(request.body)
 
-        pod_name = request.POST.get("pod_name")
-
-        container_name = request.POST.get("container_name")
-
-        image = request.POST.get("image")
-
-        ports = request.POST.get("ports", "")
-
-        env_vars = request.POST.get("env_vars", "{}")
+        namespace = data.get("namespace", "default")
+        pod_name = data.get("pod_name")
+        container_name = data.get("container_name")
+        image = data.get("image")
+        ports = data.get("ports", "")
+        env_vars = data.get("env_vars", {})
 
         try:
 
             ports = [int(port.strip()) for port in ports.split(",") if port.strip()]
 
-            env_vars = eval(env_vars) if env_vars else {}
+            # env_vars = eval(env_vars) if env_vars else {}
 
         except:
 
@@ -97,14 +100,16 @@ def update_pod_view(request):
         return JsonResponse({"message": "Pod updated successfully", "response": response["response"]})
 
 
-
+@csrf_exempt
 def delete_pod_view(request):
 
     if request.method == "POST":
 
-        namespace = request.POST.get("namespace", "default")
+        data = json.loads(request.body)
 
-        pod_name = request.POST.get("pod_name")
+        namespace = data.get("namespace", "default")
+
+        pod_name = data.get("pod_name")
 
         if not pod_name:
 
@@ -167,15 +172,20 @@ def get_pod_logs_view(request):
         return JsonResponse({"logs": response["logs"]})
 
 
-
+@csrf_exempt
 def create_pod_with_resources_view(request):
     if request.method == "POST":
-        namespace = request.POST.get("namespace", "default")
-        pod_name = request.POST.get("pod_name")
-        container_name = request.POST.get("container_name")
-        image = request.POST.get("image")
-        ports = request.POST.get("ports", "")
-        resources = request.POST.get("resources")
+        # print(request.body)
+        data = json.loads(request.body)
+
+        namespace = data.get("namespace", "default")
+        pod_name = data.get("pod_name")
+        container_name = data.get("container_name")
+        image = data.get("image")
+        ports = data.get("ports", "")
+        resources = data.get("resources")
+
+        print(data)
 
         if not pod_name or not container_name or not image or not resources:
             return JsonResponse({"error": "Pod name, container name, image, and resources are required"}, status=400)
@@ -183,8 +193,9 @@ def create_pod_with_resources_view(request):
         # Parse ports and resources
         try:
             ports = [int(port.strip()) for port in ports.split(",") if port.strip()]
-            resources = eval(resources)  # Example: '{"requests": {"cpu": "100m", "memory": "128Mi"}, "limits": {"cpu": "500m", "memory": "512Mi"}}'
-        except:
+            # resources = eval(resources)  # Example: '{"requests": {"cpu": "100m", "memory": "128Mi"}, "limits": {"cpu": "500m", "memory": "512Mi"}}'
+        except :
+            traceback.print_exc()
             return JsonResponse({"error": "Invalid ports or resources format"}, status=400)
 
         response = create_pod_with_resources(namespace, pod_name, container_name, image, resources, ports)
@@ -421,3 +432,31 @@ def get_kube_proxy_pods_view(request):
         if response["status"] == "error":
             return JsonResponse({"error": response["error"]}, status=400)
         return JsonResponse({"pods": response["pods"]})
+
+
+
+def get_pods_by_label_selector_view(request):
+    if request.method == "GET":
+        # )
+        namespace = request.GET.get("namespace", "default")
+        label_selector = request.GET.get("label_selector", "")
+
+        try:
+            response = get_pods_by_label_selector(namespace, label_selector)
+            if response["status"] == "error":
+                return JsonResponse({"error": response["error"]}, status=400)
+            return JsonResponse({"pods": response["pods"]})
+        except Exception as e:
+            traceback.print_exc()
+            return JsonResponse({"error": str(e)}, status=400)
+
+@require_http_methods(['GET'])
+def list_container_images_views(request):
+    try:
+        response = list_container_images()
+        if response["status"] == "error":
+            return JsonResponse({"error": response["error"]}, status=400)
+        return JsonResponse({"images": response["images"]})
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({"error": str(e)}, status=400)

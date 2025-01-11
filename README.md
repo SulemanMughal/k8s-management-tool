@@ -67,9 +67,22 @@
 
 
 
-#### Postman to test APIS
+#### Postman to test APIS (gmail : suleman shahid 0087)
 
-    https://hackathon-2024-6118.postman.co/workspace/My-Workspace~a751ad62-1269-4a22-8e20-42617193ecf9/collection/29333613-6a58b6df-3a46-4412-b89a-dec5944f24c8
+    https://web.postman.co/workspace/5f0ba0d3-3614-449e-849c-03018da254e5/request/40942859-fa2250e9-3354-480a-a89f-dc1730819e74
+
+
+#### Kubernetes Docs Files
+
+    https://drive.google.com/drive/folders/1eKxYTxt1LJqv7AcnAKK1T-8-hA3VQVve
+
+
+#### Trello Project Management (suleman shahid  : 0087)
+
+    https://trello.com/b/3ZdcZmzj/my-trello-board
+
+
+
 
 #### --------------------------------------------------------------------------------------------
 

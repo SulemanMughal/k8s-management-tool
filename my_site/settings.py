@@ -44,7 +44,11 @@ INSTALLED_APPS = [
     'deployment_management_app',
 
     # Daemonset Objects Management App
-    'daemonset_management'
+    'daemonset_management',
+
+    "namespaces_management_app",
+
+    "events_management_app",
 ]
 
 MIDDLEWARE = [

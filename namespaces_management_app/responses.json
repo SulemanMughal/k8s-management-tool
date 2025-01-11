@@ -1,0 +1,51 @@
+{
+    "response": {
+        "api_version": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": null,
+            "creation_timestamp": "2024-12-28T09:30:13Z",
+            "deletion_grace_period_seconds": null,
+            "deletion_timestamp": null,
+            "finalizers": null,
+            "generate_name": null,
+            "generation": null,
+            "labels": {
+                "kubernetes.io/metadata.name": "default"
+            },
+            "managed_fields": [
+                {
+                    "api_version": "v1",
+                    "fields_type": "FieldsV1",
+                    "fields_v1": {
+                        "f:metadata": {
+                            "f:labels": {
+                                ".": {},
+                                "f:kubernetes.io/metadata.name": {}
+                            }
+                        }
+                    },
+                    "manager": "kube-apiserver",
+                    "operation": "Update",
+                    "subresource": null,
+                    "time": "2024-12-28T09:30:13Z"
+                }
+            ],
+            "name": "default",
+            "namespace": null,
+            "owner_references": null,
+            "resource_version": "33",
+            "self_link": null,
+            "uid": "35de0512-047b-4ed4-adb2-97e0a4bdb34c"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "conditions": null,
+            "phase": "Active"
+        }
+    }
+}

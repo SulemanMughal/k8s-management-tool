@@ -18,6 +18,8 @@ urlpatterns = [
     path("replicasets-management/", include("replicasets_management.urls")),
     path("deployments-management/", include("deployment_management_app.urls")),
     path("daemonset-management/", include("daemonset_management.urls")),
+    path("namespaces-management/", include("namespaces_management_app.urls")),
+    path("events-management/", include("events_management_app.urls")),
 ]
 
 

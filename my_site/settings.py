@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "namespaces_management_app",
 
     "events_management_app",
+    "network_management",
 ]
 
 MIDDLEWARE = [

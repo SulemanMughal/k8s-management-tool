@@ -12,6 +12,8 @@ def load_custom_kubeconfig(config_path=settings.KUBE_CONFIG_PATH):
         # Return the API instance for core and apps
         core_api = client.CoreV1Api()
         apps_api = client.AppsV1Api()
-        return core_api, apps_api
+        networking_api = client.NetworkingV1Api()
+        custom_api = client.CustomObjectsApi()
+        return core_api, apps_api, networking_api, custom_api
     except Exception as e:
         raise Exception(f"Error loading custom kubeconfig: {e}")

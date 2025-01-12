@@ -20,6 +20,7 @@ urlpatterns = [
     path("daemonset-management/", include("daemonset_management.urls")),
     path("namespaces-management/", include("namespaces_management_app.urls")),
     path("events-management/", include("events_management_app.urls")),
+    path("network-management/", include("network_management.urls")),
 ]
 
 

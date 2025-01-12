@@ -1,13 +1,92 @@
 
 from django.http import JsonResponse
 
-from .k8s_utils import create_pod, get_pod, update_pod, delete_pod, list_pods,port_forward_pod, get_pod_logs, create_pod_with_resources, create_pod_with_startup_probe, create_pod_with_liveness_probe, create_pod_with_readiness_probe, create_pod_with_security_context, set_namespace_psa_labels, create_pod_psa_compliant, get_kube_proxy_pods, get_pods_by_label_selector, list_container_images
+from .k8s_utils import create_pod, get_pod, update_pod, delete_pod, list_pods,port_forward_pod, get_pod_logs, create_pod_with_resources, create_pod_with_startup_probe, create_pod_with_liveness_probe, create_pod_with_readiness_probe, create_pod_with_security_context, set_namespace_psa_labels, create_pod_psa_compliant, get_kube_proxy_pods, get_pods_by_label_selector, list_container_images, create_persistent_volume_claim, create_replica_set, create_service
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 import json
 
 import traceback
+
+
+@csrf_exempt
+def create_pod_with_service_and_pvc_view(request):
+
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        namespace = data.get("namespace", "default")
+
+        name = data.get("name")
+
+        container_name = data.get("container_name")
+
+        image = data.get("image")
+
+        pvc_name = data.get("pvc_name")
+
+        mount_path = data.get("mount_path", "/data")
+
+        service_name = data.get("service_name")
+
+        ports = data.get("ports", "80")
+
+        target_port = int(data.get("target_port", 80))
+
+        storage_size = data.get("storage_size", "1Gi")
+
+        env_vars = data.get("env_vars", {})
+
+        # Parse ports and environment variables
+
+        try:
+
+            ports = [int(port.strip()) for port in ports.split(",") if port.strip()]
+
+            # env_vars = eval(env_vars) if env_vars else {}
+
+        except:
+
+            return JsonResponse({"error": "Invalid ports or environment variables format"}, status=400)
+
+        # Create PVC
+
+        pvc_response = create_persistent_volume_claim(namespace, pvc_name, storage_size)
+
+        if pvc_response["status"] == "error":
+
+            return JsonResponse({"error": f"PVC creation failed: {pvc_response['error']}"}, status=400)
+
+        # Create ReplicaSet
+
+        rs_response = create_replica_set(namespace, name, container_name, image, pvc_name, mount_path, ports, env_vars)
+
+        if rs_response["status"] == "error":
+
+            return JsonResponse({"error": f"ReplicaSet creation failed: {rs_response['error']}"}, status=400)
+
+        # Create Service
+
+        svc_response = create_service(namespace, service_name, name, ports[0], target_port)
+
+        if svc_response["status"] == "error":
+
+            return JsonResponse({"error": f"Service creation failed: {svc_response['error']}"}, status=400)
+
+        return JsonResponse({
+
+            "message": "Pod with dedicated PVC and Service created successfully",
+
+            "pvc_response": pvc_response["response"],
+
+            "replica_set_response": rs_response["response"],
+
+            "service_response": svc_response["response"]
+
+        })
+
 
 def create_pod_view(request):
 

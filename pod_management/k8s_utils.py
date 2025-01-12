@@ -2,6 +2,8 @@ from my_site.utils import load_custom_kubeconfig
 from kubernetes import client
 from kubernetes.stream import portforward
 import json
+import traceback
+
 
 def create_pod(namespace, pod_name, container_name, image, ports=None, env_vars=None):
 
@@ -694,3 +696,165 @@ def list_container_images():
         return {"status": "success", "images": list(images)}
     except client.exceptions.ApiException as e:
         return {"status": "error", "error": str(e.reason), "error-status": e.status}
+    
+
+def create_persistent_volume_claim(namespace, pvc_name, storage_size="1Gi"):
+
+    # config.load_kube_config()
+
+    # v1 = client.CoreV1Api()
+
+    core_api, _,_,_ = load_custom_kubeconfig()
+
+    pvc_body = client.V1PersistentVolumeClaim(
+
+        api_version="v1",
+
+        kind="PersistentVolumeClaim",
+
+        metadata=client.V1ObjectMeta(name=pvc_name),
+
+        spec=client.V1PersistentVolumeClaimSpec(
+
+            access_modes=["ReadWriteOnce"],
+
+            resources=client.V1ResourceRequirements(requests={"storage": storage_size}),
+
+        ),
+
+    )
+
+    try:
+
+        response = core_api.create_namespaced_persistent_volume_claim(namespace=namespace, body=pvc_body)
+
+        return {"status": "success", "response": response.to_dict()}
+
+    except client.exceptions.ApiException as e:
+
+        traceback.print_exc()
+        return {"status": "error", "error": str(e)}
+
+
+
+def create_replica_set(namespace, name, container_name, image, pvc_name, mount_path, ports=None, env_vars=None):
+
+    # config.load_kube_config()
+
+    # apps_v1 = client.AppsV1Api()
+
+    core_api, apps_v1,_,_ = load_custom_kubeconfig()
+
+    # Define container specification
+
+    container = client.V1Container(
+
+        name=container_name,
+
+        image=image,
+
+        volume_mounts=[
+
+            client.V1VolumeMount(name=pvc_name, mount_path=mount_path)
+
+        ],
+
+        env=[client.V1EnvVar(name=k, value=v) for k, v in (env_vars or {}).items()],
+
+        ports=[client.V1ContainerPort(container_port=p) for p in (ports or [])],
+
+    )
+
+    # Define volumes
+
+    volumes = [client.V1Volume(
+
+        name=pvc_name,
+
+        persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(claim_name=pvc_name),
+
+    )]
+
+    # Define pod template
+
+    template = client.V1PodTemplateSpec(
+
+        metadata=client.V1ObjectMeta(labels={"app": name}),
+
+        spec=client.V1PodSpec(containers=[container], volumes=volumes),
+
+    )
+
+    # Define ReplicaSet specification
+
+    spec = client.V1ReplicaSetSpec(
+
+        replicas=1,  # One pod per ReplicaSet
+
+        selector=client.V1LabelSelector(match_labels={"app": name}),
+
+        template=template,
+
+    )
+
+    # Define ReplicaSet
+
+    replica_set = client.V1ReplicaSet(
+
+        api_version="apps/v1",
+
+        kind="ReplicaSet",
+
+        metadata=client.V1ObjectMeta(name=name),
+
+        spec=spec,
+
+    )
+
+    try:
+
+        response = apps_v1.create_namespaced_replica_set(namespace=namespace, body=replica_set)
+
+        return {"status": "success", "response": response.to_dict()}
+
+    except client.exceptions.ApiException as e:
+        traceback.print_exc()
+        return {"status": "error", "error": str(e)}
+
+
+
+def create_service(namespace, name, selector_name, port, target_port):
+
+    # config.load_kube_config()
+
+    # v1 = client.CoreV1Api()
+
+    core_api, apps_v1,_,_ = load_custom_kubeconfig()
+
+    service_body = client.V1Service(
+
+        api_version="v1",
+
+        kind="Service",
+
+        metadata=client.V1ObjectMeta(name=name),
+
+        spec=client.V1ServiceSpec(
+
+            selector={"app": selector_name},
+
+            ports=[client.V1ServicePort(port=port, target_port=target_port)],
+
+        ),
+
+    )
+
+    try:
+
+        response = core_api.create_namespaced_service(namespace=namespace, body=service_body)
+
+        return {"status": "success", "response": response.to_dict()}
+
+    except client.exceptions.ApiException as e:
+        traceback.print_exc()
+        return {"status": "error", "error": str(e)}

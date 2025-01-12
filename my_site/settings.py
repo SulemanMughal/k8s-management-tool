@@ -50,6 +50,8 @@ INSTALLED_APPS = [
 
     "events_management_app",
     "network_management",
+
+    "volumes_management"
 ]
 
 MIDDLEWARE = [

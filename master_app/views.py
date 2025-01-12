@@ -19,10 +19,51 @@ def list_nodes(request):
     """
     List all Nodes in the cluster.
     """
-    core_api, _ = load_custom_kubeconfig()
+    core_api, _ ,_,_= load_custom_kubeconfig()
     try:
         nodes = core_api.list_node()
-        return JsonResponse({"nodes": [{"name": node.metadata.name, "status": node.status.conditions[-1].type} for node in nodes.items]})
+        node_list = []
+
+        # Process each node to extract details
+
+        for node in nodes.items:
+
+            node_info = {
+
+                "name": node.metadata.name,
+
+                "labels": node.metadata.labels,
+
+                "annotations": node.metadata.annotations,
+
+                "status": node.status.conditions[-1].type if node.status.conditions else "Unknown",
+
+                "addresses": [{"type": addr.type, "address": addr.address} for addr in node.status.addresses],
+
+                "capacity": node.status.capacity,
+
+                "allocatable": node.status.allocatable,
+
+                "node_info": {
+
+                    "architecture": node.status.node_info.architecture,
+
+                    "container_runtime_version": node.status.node_info.container_runtime_version,
+
+                    "kernel_version": node.status.node_info.kernel_version,
+
+                    "kubelet_version": node.status.node_info.kubelet_version,
+
+                    "os_image": node.status.node_info.os_image,
+
+                },
+
+            }
+
+            node_list.append(node_info)
+
+        # return JsonResponse({"nodes": [{"name": node.metadata.name, "status": node.status.conditions[-1].type} for node in nodes.items]})
+        return JsonResponse({"nodes": node_list})
     except client.exceptions.ApiException as e:
         return JsonResponse({"error": str(e)}, status=500)
     

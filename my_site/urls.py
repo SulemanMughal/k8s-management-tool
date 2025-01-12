@@ -21,6 +21,7 @@ urlpatterns = [
     path("namespaces-management/", include("namespaces_management_app.urls")),
     path("events-management/", include("events_management_app.urls")),
     path("network-management/", include("network_management.urls")),
+    path("volumes-management/", include("volumes_management.urls")),
 ]
 
 

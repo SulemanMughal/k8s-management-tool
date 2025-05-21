@@ -1,278 +1,135 @@
-#### Pre-reuisites before commit code
+# K8s Management Tool
 
-- Remove `backports.zoneinfo` from requirements.txt
+A comprehensive Kubernetes management solution designed to simplify the deployment, monitoring, and maintenance of Kubernetes clusters. This tool aims to automate common tasks such as cluster setup, monitoring, scaling, security checks, and backups.
 
+## Objectives
 
+* **Streamlined Cluster Deployment**: Simplify the process of setting up and configuring Kubernetes clusters across various environments.
+* **Centralized Monitoring**: Provide a unified dashboard for real-time monitoring of cluster health and resource utilization using tools like Prometheus and Grafana.
+* **Automated Maintenance**: Implement automated tools for routine tasks such as backups, upgrades, and scaling to reduce manual efforts and improve reliability.
+* **Security Best Practices**: Enforce security policies, conduct automated audits, and ensure that clusters adhere to security best practices through integrated checks.
+* **Scalability**: Ensure that the tool can handle scaling Kubernetes environments and workloads seamlessly.
 
-#### Setup Project
+## Technologies Used
 
-- Get Kubernetes Configuration File Consume Kuberentes-API
+This tool leverages several technologies to provide an efficient management solution for Kubernetes clusters:
 
+* **Kubernetes**: A container orchestration system used for automating the deployment, scaling, and management of containerized applications. [More info on Kubernetes](https://kubernetes.io/)
+* **Helm**: A package manager for Kubernetes that simplifies the deployment and management of Kubernetes applications. [More info on Helm](https://helm.sh/)
+* **Prometheus**: An open-source monitoring and alerting toolkit used for gathering metrics and monitoring the health of Kubernetes clusters. [More info on Prometheus](https://prometheus.io/)
+* **Grafana**: An open-source platform for monitoring and observability, used to visualize metrics collected by Prometheus. [More info on Grafana](https://grafana.com/)
+* **Ansible**: An open-source automation tool used for configuration management, application deployment, and task automation across Kubernetes clusters. [More info on Ansible](https://www.ansible.com/)
+* **Python**: Used for scripting and automating Kubernetes management tasks within the tool. [More info on Python](https://www.python.org/)
+* **Docker**: A platform for building, shipping, and running containerized applications, which is essential for Kubernetes clusters. [More info on Docker](https://www.docker.com/)
+* **Terraform** (optional): Infrastructure as code (IaC) tool used to define and provision data center infrastructure. [More info on Terraform](https://www.terraform.io/)
 
+## Features
 
-#### IP Addresses For the server
+The K8s Management Tool includes the following features:
 
-- Master Node : 104.131.83.201
-- Worker Node-1 : 104.131.43.246
-- Worker Node-2 : 104.131.48.221
+* **Cluster Deployment Automation**:
 
-#### Access Servers through ssh-key
+  * Automates the creation and deployment of Kubernetes clusters using Helm charts and Ansible playbooks.
+  * Supports different environments (e.g., development, staging, and production).
+* **Real-Time Monitoring**:
 
-    ssh -i ~/.ssh/new_droplet_key root@104.131.48.221
+  * Integrated Prometheus and Grafana dashboards to visualize real-time cluster metrics such as CPU usage, memory usage, and resource utilization.
+* **Automated Backups**:
 
+  * Scheduled automated backups for Kubernetes clusters, including cluster configurations and persistent volumes.
+* **Cluster Scaling**:
 
-#### Development Env File
+  * Automated horizontal and vertical scaling of Kubernetes workloads based on predefined metrics and thresholds.
+* **Security Audits**:
 
-    https://docs.google.com/document/d/19DmsHYfJbxD4EPYLAtKQZsr4CbSloBHWPpp3jmLOQqE/edit?usp=sharing
+  * Regular security audits to ensure compliance with Kubernetes best practices and security policies.
+  * Integration with tools like KubeAudit or kube-bench for vulnerability scanning.
+* **Resource Optimization**:
 
+  * Optimized resource utilization with intelligent auto-scaling mechanisms for efficient management.
+* **Centralized Logging**:
 
-#### To Install and Configure Postgresql
+  * Integration with centralized logging solutions like ELK stack or Fluentd for better management and analysis of cluster logs.
 
-    https://docs.google.com/document/d/1neeVOj4w_N_7quNffLAbXSHpNnGY9R1qU5s0XZTF1pg/edit?usp=sharing
+## Applications
 
+This management tool is ideal for:
 
-#### To Test Database Connection:
+* **DevOps Engineers**: Simplifying the management and monitoring of Kubernetes clusters in various environments.
+* **System Administrators**: Automating and maintaining Kubernetes environments to reduce operational overhead.
+* **Cloud Architects**: Managing large-scale Kubernetes deployments with ease.
+* **Organizations**: Ensuring Kubernetes clusters are secure, optimized, and compliant with industry standards.
+* **Cloud Providers**: Supporting managed Kubernetes offerings and providing users with integrated tools for cluster deployment and monitoring.
 
-    python3 ./my_site/test_dbConnection.py
+## Future Enhancements
 
+To further enhance the functionality and user experience of this project, the following features could be implemented:
 
-#### To Test Kubernetes API Access:
-    python3 ./my_sites/test_access_kube.py
+* **Multi-Cluster Management**:
 
+  * Support for managing multiple Kubernetes clusters from a single interface.
+* **Integration with Cloud Providers**:
 
+  * Cloud-native Kubernetes management integrations for AWS, Azure, and GCP (e.g., EKS, AKS, GKE).
+* **Self-Healing Mechanism**:
 
-#### First-Time Configure Project
+  * Implement self-healing capabilities that automatically restart failed pods or adjust resources.
+* **Cost Monitoring and Optimization**:
 
-    - python3 -m venv my_env
-    - source my_env/bin/activate
-    - pip3 install -r requirements.txt
-    - python3 manage.py makemigrations
-    - python3 manage.py migrate
+  * Integrate cost management tools (e.g., Kubecost) to track and optimize cloud spending on Kubernetes clusters.
+* **Advanced User Management**:
 
+  * Implement role-based access control (RBAC) for managing user permissions across clusters and resources.
+* **Alerting and Notifications**:
 
-#### CreateSuperuser
+  * Advanced notification system for resource thresholds, errors, or security issues.
+* **Integration with CI/CD**:
 
-    - python3 manage.py createsuperuser
+  * Automatically deploy applications to Kubernetes from CI/CD pipelines like Jenkins, GitLab, or GitHub Actions.
 
+## Conclusion
 
+The K8s Management Tool simplifies the complexities of managing Kubernetes clusters by automating routine tasks, ensuring cluster health, and providing real-time monitoring. With built-in scalability, security checks, and automated backups, it helps DevOps teams manage Kubernetes clusters efficiently. This tool provides an ideal solution for organizations looking to improve their Kubernetes management process, ensuring security, scalability, and performance across environments.
 
+## Installation
 
-#### Start A Development Server
+To set up the K8s Management Tool on your local machine or server, follow these steps:
 
-    - python3 manage.py runserver
+1. **Clone the repository**:
 
-#### Access Web Interface
+   ```bash
+   git clone https://github.com/SulemanMughal/k8s-management-tool.git
+   cd k8s-management-tool
+   ```
 
-    - http://localhost:8000
+2. **Set up the virtual environment** (optional but recommended):
 
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   ```
 
+3. **Install the required dependencies**:
 
-#### Postman to test APIS (gmail : suleman shahid 0087)
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-    https://web.postman.co/workspace/5f0ba0d3-3614-449e-849c-03018da254e5/request/40942859-fa2250e9-3354-480a-a89f-dc1730819e74
+4. **Configure Kubernetes Cluster**:
 
+   * Ensure you have a running Kubernetes cluster and that `kubectl` is configured to point to your cluster.
+   * Configure any environment variables as necessary (e.g., Kubernetes credentials, Prometheus/Grafana URLs).
 
-#### Kubernetes Docs Files
+5. **Run the K8s Management Tool**:
 
-    https://drive.google.com/drive/folders/1eKxYTxt1LJqv7AcnAKK1T-8-hA3VQVve
+   ```bash
+   python manage.py runserver
+   ```
 
+6. **Access the Tool**:
+   Open a browser and navigate to `http://localhost:8000/` to access the K8s management dashboard.
 
-#### Trello Project Management (suleman shahid  : 0087)
+## Contributing
 
-    https://trello.com/b/3ZdcZmzj/my-trello-board
+Contributions are welcome! If you would like to contribute to this project, feel free to fork the repository, make your changes, and submit a pull request. Contributions may include bug fixes, documentation improvements, new features, and optimizations.
 
-
-
-
-#### --------------------------------------------------------------------------------------------
-
-
-#### Features List:
-
-
-- Cluster Nodes
-
-    - List Down All Nodes
-    - Fetch the podCIDR for a specific node.
-    - Describe A Node
-
-
-
-- DaemonSet Management
-
-    - Create DaemonSet 
-    - Describde
-    - List 
-    - Update Container Image
-    - Delete
-    - Get Pods Management By All DaemonSet
-    - Get Pods Managed BY A Specific DaemonSet Object
-    - DaemonSet with a nodeSelector to restrict it to specific nodes
-    - update a DaemonSet with nodeAffinity
-    - Mimic pausing a DaemonSet by removing nodeSelector or setting a taint.
-    - Resume a DaemonSet by re-adding the nodeSelector.
-    - Get the nodes on which a specific DaemonSet is deployed.
-    - change the namespace of a DaemonSet.
-    - Get the rollout status of a DaemonSet.
-    - Get the rollout status of a DaemonSet with periodic polling until the rollout completes.
-    - Rollout History Management (Update, Retrieve)
-    - Event List For A DaemonSet Object 
-    - Update Function to Apply RollingUpdate Strategy
-
-#   template inheritance
-
-
-# Django : template inheritance
-
-
-**base.html**
-
-
-```
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="{% static 'assets/img/favicon.png' %}">
-
-
-    <title>{% block title %}{% endblock %}</title>
-
-    {% include 'style.html' %}
-
-    {% block extra_style %}
-    {% endblock %}
-
-
-
-</head>
-<body>
-    {% block header %}
-        {% include 'header.html' %}
-    {% endblock %}
-
-    {% block content %}
-    {% endblock %}
-
-    {% block footer %}
-        {% include 'footer.html' %}
-    {% endblock %}
-
-    {% include 'script.html' %}
-
-    {% block extra_script %}
-    {% endblock %}
-
-
-</body>
-</html>
-
-```
-
-
-**index.html**
-
-```
-{% extends 'base.html' %}
-
-{% block content %}
-
-<h1>Landing page</h1>
-
-
-{% endblock %}
-```
-
-
-**app/views.py**
-
-```
-
-def index(request):
-    template_name = "master_app/index.html"
-    context = {
-
-    }
-    return render(request, template_name, context)
-
-```
-
-
-**app/urls.py**
-
-```
-from django.urls import path
-
-from . import views
-
-urlpatterns = [
-    path("", views.index, name="index")
-]
-
-```
-
-
-**project/urls.py**
-
-```
-
-from django.contrib import admin
-from django.urls import path, include 
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path("", include("master_app.urls"))
-]
-
-
-
-```
-
-
-**messages.html**
-
-```
-{% if messages %}
-    {% for message in messages %}
-        {% if message.tags == 'error' %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-        {% elif message.tags == 'success' %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-        {% elif message.tags == 'warning' %}
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-        {% endif %}
-    {% endfor %}
-{% endif %}
-
-```
-
-# Django Login Decorator
-
-```
-from django.contrib.auth.decorators import login_required
-
-@login_required
-
-
-
-```
